@@ -54,6 +54,12 @@ def construct_index(document):
     prompt_helper = PromptHelper(max_input_size, num_output, max_chunk_overlap)
 
     service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor, prompt_helper=prompt_helper)
+    
+    index = GPTSimpleVectorIndex.from_documents(
+        document, service_context=service_context
+    )
+
+    index.save_to_disk('index.json')
 
 @dp.message_handler(commands="train")
 async def train_model(message: Message):
@@ -67,9 +73,7 @@ async def train_model(message: Message):
 
 @dp.message_handler(state=AskQuestion.Ask)
 async def ask_questions(message: Message, state:FSMContext):
-    openai_index = GPTSimpleVectorIndex.from_documents(
-    document, service_context=service_context
-    )
 
-    response = openai_index.query(message.text)
+    index = GPTSimpleVectorIndex.load_from_disk('index.json')
+    response = index.query(message.text, response_mode="tree-summarize")
     await message.reply((response))
