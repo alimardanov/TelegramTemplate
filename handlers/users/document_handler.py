@@ -11,9 +11,9 @@ from loader import dp
 from loader import bot
 
 
-@dp.message_handler(Command('insert'))
+@dp.message_handler(Command('upload'))
 async def insert(message: types.Message):
-    await message.answer(f"Please Insert a document, {message.from_user.full_name}!")
+    await message.answer(f"Please upload a document, {message.from_user.full_name}!")
     await UploadWaiterState.Upload.set()
  
 
@@ -68,12 +68,11 @@ async def train_model(message: Message):
         document = read_doc()
         construct_index(document)
         await message.answer("Successfully learned the document. Now you can Ask anything.")
-        await AskQuestion.Ask.set()
 
 
-@dp.message_handler(state=AskQuestion.Ask)
+@dp.message_handler(state=None)
 async def ask_questions(message: Message, state:FSMContext):
 
     index = GPTSimpleVectorIndex.load_from_disk('index.json')
-    response = index.query(message.text, response_mode="tree-summarize")
+    response = index.query(message.text, response_mode="default")
     await message.reply((response))

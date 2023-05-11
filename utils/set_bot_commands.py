@@ -6,7 +6,7 @@ async def set_default_commands(dp):
         [
             types.BotCommand("start", "Botni ishga tushurish"),
             types.BotCommand("help", "Yordam"),
-            types.BotCommand("insert", "Insert Document"),
+            types.BotCommand("upload", "Upload Document"),
             types.BotCommand("train", "Insert Document"),
         ]
     )
